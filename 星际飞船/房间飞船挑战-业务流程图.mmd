@@ -1,0 +1,137 @@
+
+
+```mermaid
+flowchart TD
+    START([用户进入语音房]) --> ENTRY[房间右下角展示飞船挑战入口]
+    ENTRY --> OPEN[点击入口打开飞船主弹窗]
+OPEN --> VIEW[查看五级飞船、当前进度与奖励预览]
+VIEW --> SWITCH[切换 Lv.1 至 Lv.5 查看各档位]
+VIEW --> REWARD_PREVIEW[按当前规则布局分区展示<br/>普通能量仓奖池及Top1至Top3共用MVP奖励]
+REWARD_PREVIEW --> VIEW
+SWITCH --> LEVEL_STATE{所选等级当前状态}
+LEVEL_STATE -- 当前充能等级 --> STATE_CHARGING[显示飞船充能中<br/>当前值除以目标值]
+LEVEL_STATE -- 尚未启动等级 --> STATE_WAITING[显示飞船待启动]
+LEVEL_STATE -- 已完成等级 --> STATE_FINISHED[显示飞船已发射<br/>及该阶段 MVP 结果]
+STATE_CHARGING --> VIEW
+STATE_WAITING --> VIEW
+STATE_FINISHED --> VIEW
+VIEW --> RULES[点击规则入口查看玩法规则]
+RULES --> VIEW
+VIEW --> RECORDS[点击奖励记录入口]
+RECORDS --> RECORD_TAB{选择记录页签}
+RECORD_TAB -- MVP奖励 --> RECORD_LIST[查看当前房间近30天MVP公开记录<br/>含贡献值及MVP奖励]
+RECORD_TAB -- 能量仓奖励 --> SELF_RECORDS[查看当前用户近30天能量仓记录<br/>含贡献值及普通能量仓奖励]
+RECORD_LIST --> PROFILE[点击头像或昵称进入用户资料页]
+RECORD_LIST --> VIEW
+SELF_RECORDS --> VIEW
+
+subgraph CHARGE[房间充能与等级推进]
+    GIFT[用户送出任意付费礼物] --> EVENT_ORDER[按服务端确认成功时间<br/>依次处理同一房间送礼事件]
+    EVENT_ORDER --> ENERGY[按 1 金币等于 10 能量值换算]
+    ENERGY --> ADD[按等级顺序分配能量<br/>记录各等级实际分配的阶段贡献]
+    ADD --> FULL{当前等级是否充满}
+    FULL -- 否 --> CHARGING[主弹窗显示充能中<br/>当前值除以目标值]
+    CHARGING --> GIFT
+    FULL -- 是 --> READY_LAUNCH[主弹窗短暂展示已充满/待发射<br/>飞船点火蓄力0.3至0.5秒]
+    READY_LAUNCH --> LOCK[锁定本阶段进度、贡献用户及排名数据]
+    LOCK --> SNAPSHOT[锁定阶段贡献数据及当日配置快照]
+    SNAPSHOT --> LEVEL{当前是否为 Lv.5}
+    LEVEL -- 否 --> NEXT[业务状态立即进入下一等级]
+    NEXT --> OVERFLOW[按实际剩余能量拆分贡献<br/>继续分配至下一等级]
+    OVERFLOW --> GIFT
+    LEVEL -- 是 --> COMPLETE[进入今日全部发射完成状态]
+    COMPLETE --> STOP[Lv.5 溢出能量及当日后续送礼<br/>不再计入飞船进度]
+end
+
+START --> GIFT
+
+subgraph LAUNCH[飞船发射表现]
+    LOCK --> QUEUE{房间动效队列是否为空}
+    QUEUE -- 是 --> HIDE_PANEL
+    QUEUE -- 否 --> INSERT[插入为下一个播放项<br/>不打断当前动效]
+    INSERT --> HIDE_PANEL[轮到播放时隐藏主弹窗<br/>并暗化房间背景]
+    HIDE_PANEL --> LAUNCH_FULL[播放当前档位房间级发射动效<br/>时长不超过4秒且全房可见]
+    LAUNCH_FULL --> ELIGIBLE_VIEW{当前用户是否有奖励资格}
+    ELIGIBLE_VIEW -- 否 --> RESTORE_NO_DROP[不展示掉落层<br/>恢复房间状态]
+    ELIGIBLE_VIEW -- 是 --> RAIN[紧接播放一次3.5秒全屏掉落动效<br/>固定10个视觉能量仓且X轴位置随机]
+    RAIN --> DROP_ACTION{是否在3.5秒内<br/>点击动画区域任意位置}
+    DROP_ACTION -- 是 --> CLICK_OPEN[停止本地掉落并打开已确定结果]
+    DROP_ACTION -- 否 --> AUTO_OPEN[3.5秒结束后自动进入结果反馈]
+    CLICK_OPEN --> RESULT_READY{奖励是否已全部成功入账}
+    AUTO_OPEN --> RESULT_READY
+    RESULT_READY -- 是 --> EFFECT_END[原生中心放大并轻微回弹<br/>展示完整开奖弹窗]
+    RESULT_READY -- 否 --> GRANTING[原生中心放大并轻微回弹<br/>展示奖励发放中]
+    EFFECT_END --> RESTORE_CONTEXT[关闭完整开奖弹窗后恢复房间状态<br/>已完成档位展示MVP结果]
+    GRANTING --> GRANTING_END[用户关闭后恢复房间状态<br/>后续反馈按补发流程处理]
+end
+
+subgraph SETTLEMENT[奖励结算与发放]
+    LOCK --> USERS[统计本阶段每名用户的<br/>拆分后阶段贡献金币]
+    USERS --> THRESHOLD{是否达到五级统一的<br/>固定金币准入门槛}
+    THRESHOLD -- 否 --> NO_REWARD[贡献仍计入房间进度<br/>不获得奖励且不参与 MVP 排名]
+    THRESHOLD -- 是 --> ELIGIBLE[进入本阶段达标贡献用户集合]
+    ELIGIBLE --> WAREHOUSE[为每名达标用户随机确定<br/>一份能量仓奖励]
+    ELIGIBLE --> RANK[按阶段贡献金币降序排名<br/>同值按最终贡献完成时间升序<br/>仍同值按用户ID数值升序]
+    RANK --> TOP3[确定 MVP Top1 至 Top3<br/>达标用户不足 3 人时全部达标用户获奖]
+    WAREHOUSE --> MERGE[汇总用户本阶段应得奖励]
+    TOP3 --> MERGE
+    MERGE --> IS_MVP{用户是否为 MVP}
+    IS_MVP -- 否 --> NORMAL_REWARD[应得奖励仅包含能量仓奖励]
+    IS_MVP -- 是 --> DOUBLE_REWARD[应得奖励包含普通能量仓奖励<br/>及Top1至Top3共用内容的MVP额外能量仓]
+    NORMAL_REWARD --> DEDUP[按玩法、房间实例、自然日、等级、阶段结算、<br/>用户、奖励来源及具体奖励项防重]
+    DOUBLE_REWARD --> DEDUP
+    DEDUP --> SENT{奖励是否已成功发放}
+    SENT -- 是 --> NO_REPEAT[不重复发奖、不重复生成中奖结果]
+    SENT -- 否 --> AUTO_SEND[系统自动发放全部应得奖励]
+    AUTO_SEND --> SUCCESS{全部应得奖励是否发放成功}
+    SUCCESS -- 否 --> RETRY[失败奖励项进入异常待处理<br/>具体重试与补发流程待确认]
+    RETRY --> SUCCESS
+    SUCCESS -- 是 --> RESULT[完成该获奖用户结算<br/>记录完整中奖结果]
+    RESULT --> ALL_WINNERS[全部应得奖励成功入账后<br/>向所有获奖用户发送通知]
+    RESULT --> RECORD_TYPE{该用户本阶段获得哪些奖励}
+    RECORD_TYPE -- 仅普通能量仓 --> SAVE_SELF[生成或更新本人的<br/>能量仓奖励记录]
+    RECORD_TYPE -- 普通能量仓及MVP奖励 --> SAVE_BOTH[分别生成或更新本人能量仓记录<br/>及MVP公开记录]
+    ALL_WINNERS --> NOTICE_TYPE{用户是否获得 MVP 奖励}
+    NOTICE_TYPE -- 否 --> NORMAL_NOTICE[发送普通奖励通知<br/>告知能量仓奖励已到账]
+    NOTICE_TYPE -- 是 --> MVP_NOTICE[发送 MVP 奖励通知<br/>告知能量仓及 MVP 奖励已到账]
+    NORMAL_NOTICE --> NOTICE_SUCCESS{通知是否发送成功}
+    MVP_NOTICE --> NOTICE_SUCCESS
+    NOTICE_SUCCESS -- 是 --> NOTICE_DONE[同一用户、房间、自然日及等级<br/>只发送一条奖励发放通知]
+    NOTICE_SUCCESS -- 否 --> NOTICE_PENDING[进入通知异常待处理<br/>具体重试与补偿流程待确认]
+    NOTICE_PENDING --> NOTICE_ERROR[保留通知异常记录<br/>不回滚已到账奖励]
+end
+
+subgraph POPUP[中奖弹窗反馈]
+    POP_READY[中奖结果进入展示判断] --> PRESENT{能量仓掉落期间用户是否仍在当前房间<br/>且 App 处于前台}
+    PRESENT -- 否 --> ARRIVED[金币进入账户，物料或道具进入背包<br/>不补弹中奖弹窗]
+    PRESENT -- 是 --> CLICK_DROP{用户是否在3.5秒内<br/>点击动画区域任意位置}
+    CLICK_DROP -- 否 --> NO_POPUP[3.5秒掉落结束后<br/>自动展开中奖弹窗]
+    NO_POPUP --> POP_TYPE
+    CLICK_DROP -- 是 --> POP_TYPE{用户是否获得 MVP 奖励}
+    POP_TYPE -- 否 --> NORMAL_POP[普通中奖弹窗<br/>展示飞船等级、能量仓奖励图标与数量]
+    POP_TYPE -- 是 --> MVP_POP[MVP 中奖弹窗<br/>展示 MVP TopN 身份反馈]
+    MVP_POP --> GRID[同一奖励区域展示能量仓及 MVP 奖励<br/>最多 8 项，4 列乘 2 行]
+    NORMAL_POP --> FEEDBACK[提示奖励已自动发放]
+    GRID --> FEEDBACK
+    FEEDBACK --> CONFIRM[点击确认仅关闭弹窗<br/>不重新抽奖、不请求领取或发奖]
+end
+
+RESULT --> POP_READY
+
+subgraph MVP_HISTORY[奖励记录]
+    SAVE_BOTH --> SAVE_MVP[生成或更新MVP公开记录]
+    SAVE_MVP --> HISTORY_FIELDS[记录发放时间、用户头像及昵称、<br/>飞船等级、阶段贡献值和房间 ID]
+    HISTORY_FIELDS --> KEEP[展示近30天记录及MVP奖励<br/>时间精确到分钟，贡献值使用K、M、B缩写]
+    KEEP --> RECORD_LIST
+    SAVE_BOTH --> SAVE_SELF_MVP[生成或更新该用户本人的<br/>普通能量仓记录]
+    SAVE_SELF_MVP --> SELF_FIELDS
+    SAVE_SELF --> SELF_FIELDS[记录发放时间、飞船等级、阶段贡献值、<br/>房间ID及普通能量仓奖励]
+    SELF_FIELDS --> SELF_KEEP[仅向当前用户展示近30天记录]
+    SELF_KEEP --> SELF_RECORDS
+end
+
+RESET([每日 GMT+3 00:00]) --> CONFIG_SNAPSHOT[生成新自然日配置快照]
+CONFIG_SNAPSHOT --> RESET_ALL[所有房间回到 Lv.1<br/>清空进行中数据及当日状态]
+RESET_ALL --> KEEP_LOCKED[已锁定结算、待补发、通知状态、<br/>MVP公开记录及个人能量仓记录继续保留]
+RESET_ALL --> GIFT
+```

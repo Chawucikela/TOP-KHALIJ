@@ -1,0 +1,69 @@
+```mermaid
+flowchart TD
+    A[房间用户送出任意付费礼物] --> EVENT_ORDER[按服务端确认成功时间<br/>依次处理同一房间送礼事件]
+    EVENT_ORDER --> B[按 1 金币 = 10 能量值换算<br/>逐级拆分能量与阶段贡献]
+    B --> C{当前等级能量是否充满}
+C -- 否 --> B
+C -- 是 --> D[锁定本阶段贡献数据]
+
+D --> E[统计本阶段每名用户的<br/>拆分后阶段贡献金币]
+E --> THRESHOLD{是否达到五级统一的<br/>固定金币准入门槛}
+THRESHOLD -- 否 --> NO_REWARD[贡献仍计入房间进度<br/>不获得奖励且不参与 MVP 排名]
+THRESHOLD -- 是 --> F[为每名达标用户<br/>随机确定一份能量仓奖励]
+F --> G[按阶段贡献金币降序排名<br/>同值按最终贡献完成时间升序<br/>仍同值按用户ID数值升序]
+G --> H{用户是否为 Top1 至 Top3}
+H -- 否 --> I[应得奖励：能量仓奖励]
+H -- 是 --> J[应得奖励：普通能量仓奖励<br/>加Top1至Top3共用内容的MVP额外能量仓]
+I --> K[按玩法、房间实例、自然日、等级、阶段结算、<br/>用户、奖励来源及具体奖励项校验是否已发放]
+J --> K
+
+K --> L{是否已成功发放}
+L -- 是 --> M[不重复发放或重复弹窗]
+L -- 否 --> N[系统自动发放全部应得奖励]
+N --> O{全部应得奖励是否发放成功}
+O -- 否 --> P[失败奖励项进入异常待处理<br/>具体重试与补发流程待确认]
+P --> O
+O -- 是 --> Q[完成该获奖用户结算<br/>记录奖励到账结果]
+Q --> ALL_WINNERS[全部应得奖励成功入账后<br/>向所有获奖用户发送通知]
+Q --> SAVE_RECORDS{用户是否获得MVP奖励}
+SAVE_RECORDS -- 否 --> SAVE_SELF[生成或更新本人能量仓记录]
+SAVE_RECORDS -- 是 --> SAVE_BOTH_RECORDS[分别生成或更新本人能量仓记录<br/>及MVP公开记录]
+ALL_WINNERS --> NOTICE{用户是否获得 MVP 奖励}
+NOTICE -- 否 --> NOTICE_NORMAL[发送普通奖励通知<br/>告知能量仓奖励已到账]
+NOTICE -- 是 --> NOTICE_MVP[发送 MVP 奖励通知<br/>告知能量仓及 MVP 奖励已到账]
+NOTICE_NORMAL --> NOTICE_SUCCESS{通知是否发送成功}
+NOTICE_MVP --> NOTICE_SUCCESS
+NOTICE_SUCCESS -- 是 --> NOTICE_ONCE[同一用户、房间、自然日及等级<br/>只发送一条奖励发放通知]
+NOTICE_SUCCESS -- 否 --> NOTICE_PENDING[进入通知异常待处理<br/>具体重试与补偿流程待确认]
+NOTICE_PENDING --> NOTICE_ERROR[保留通知异常记录<br/>不回滚已到账奖励]
+
+D --> HIDE_PANEL[隐藏主弹窗并暗化房间背景]
+HIDE_PANEL --> R[播放当前档位房间级发射动效<br/>时长不超过4秒且全房可见]
+R --> ELIGIBLE_VIEW{当前用户是否有奖励资格}
+ELIGIBLE_VIEW -- 否 --> NO_DROP[不展示掉落层并恢复房间状态]
+ELIGIBLE_VIEW -- 是 --> DROP[紧接播放一次3.5秒全屏掉落动效<br/>固定10个视觉能量仓且X轴位置随机]
+DROP --> S{是否在3.5秒内<br/>点击动画区域任意位置}
+S -- 是 --> RESULT_READY{奖励是否已全部成功入账}
+S -- 否 --> AUTO_OPEN[3.5秒结束后自动进入结果反馈]
+AUTO_OPEN --> RESULT_READY
+RESULT_READY -- 是 --> EFFECT_END[原生中心放大并轻微回弹<br/>展示完整开奖结果]
+RESULT_READY -- 否 --> GRANTING[原生中心放大并轻微回弹<br/>展示奖励发放中]
+
+Q --> T{能量仓掉落期间用户是否仍在当前房间<br/>且 App 处于前台}
+T -- 否 --> U[金币进入账户，物料或道具进入背包<br/>不补弹中奖弹窗]
+T -- 是 --> V{用户是否在3.5秒内<br/>点击动画区域任意位置}
+V -- 否 --> NO_POP[3.5秒掉落结束后<br/>自动展开中奖弹窗]
+NO_POP --> W
+V -- 是 --> W{用户是否获得 MVP 奖励}
+W -- 否 --> X[展示普通中奖弹窗<br/>能量仓奖励图标和数量]
+W -- 是 --> Y[展示双重奖励弹窗<br/>MVP TopN 身份标识]
+Y --> Z[同一奖励网格展示<br/>能量仓和 MVP 奖励<br/>最多 4 列乘 2 行]
+X --> AA[提示奖励已自动发放]
+Z --> AA
+
+D --> AB{当前等级是否为 L5}
+AB -- 否 --> AC[立即进入下一等级]
+AC --> AD[溢出能量及充满后新送礼<br/>计入下一等级]
+AB -- 是 --> AE[进入今日全部发射完成状态]
+AE --> AF[L5 溢出能量及后续送礼<br/>不再计入飞船进度]
+```
