@@ -37,7 +37,8 @@ NOTICE_SUCCESS -- 是 --> NOTICE_ONCE[同一用户、房间、自然日及等级
 NOTICE_SUCCESS -- 否 --> NOTICE_PENDING[进入通知异常待处理<br/>具体重试与补偿流程待确认]
 NOTICE_PENDING --> NOTICE_ERROR[保留通知异常记录<br/>不回滚已到账奖励]
 
-D --> HIDE_PANEL[隐藏主弹窗并暗化房间背景]
+D --> DISPLAY_QUEUE[按等级从低到高进入逐级展示队列]
+DISPLAY_QUEUE --> HIDE_PANEL[隐藏主弹窗并暗化房间背景]
 HIDE_PANEL --> R[播放当前档位房间级发射动效<br/>时长不超过4秒且全房可见]
 R --> ELIGIBLE_VIEW{当前用户是否有奖励资格}
 ELIGIBLE_VIEW -- 否 --> NO_DROP[不展示掉落层并恢复房间状态]
@@ -46,8 +47,13 @@ DROP --> S{是否在3.5秒内<br/>点击动画区域任意位置}
 S -- 是 --> RESULT_READY{奖励是否已全部成功入账}
 S -- 否 --> AUTO_OPEN[3.5秒结束后自动进入结果反馈]
 AUTO_OPEN --> RESULT_READY
-RESULT_READY -- 是 --> EFFECT_END[原生中心放大并轻微回弹<br/>展示完整开奖结果]
-RESULT_READY -- 否 --> GRANTING[原生中心放大并轻微回弹<br/>展示奖励发放中]
+RESULT_READY -- 是 --> EFFECT_END[展示完整开奖结果<br/>等待用户关闭反馈]
+RESULT_READY -- 否 --> GRANTING[展示奖励发放中<br/>等待用户关闭反馈]
+NO_DROP --> NEXT_LEVEL{是否还有下一等级待展示}
+EFFECT_END --> NEXT_LEVEL
+GRANTING --> NEXT_LEVEL
+NEXT_LEVEL -- 是 --> DISPLAY_QUEUE
+NEXT_LEVEL -- 否 --> FLOW_END[本次逐级展示结束]
 
 Q --> T{能量仓掉落期间用户是否仍在当前房间<br/>且 App 处于前台}
 T -- 否 --> U[金币进入账户，物料或道具进入背包<br/>不补弹中奖弹窗]
@@ -66,4 +72,12 @@ AB -- 否 --> AC[立即进入下一等级]
 AC --> AD[溢出能量及充满后新送礼<br/>计入下一等级]
 AB -- 是 --> AE[进入今日全部发射完成状态]
 AE --> AF[L5 溢出能量及后续送礼<br/>不再计入飞船进度]
+
+BAN[房间被封禁] --> STOP_CHARGE[入口保留且停止新增充能统计]
+BAN --> KEEP_ANIMATION[不主动取消已排队或正在播放的动画]
+STOP_CHARGE --> ROOM_REQUEST[用户在房内发起任一接口请求]
+ROOM_REQUEST --> BAN_RESULT{接口是否返回房间封禁}
+BAN_RESULT -- 否 --> NORMAL_ACTION[按原业务继续处理]
+BAN_RESULT -- 是 --> ABORT_ACTION[终止原请求且不产生房内副作用]
+ABORT_ACTION --> AUTO_EXIT[自动退出房间并提示房间已被封禁]
 ```

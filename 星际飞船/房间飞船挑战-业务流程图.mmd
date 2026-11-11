@@ -27,7 +27,8 @@ SELF_RECORDS --> VIEW
 
 subgraph CHARGE[房间充能与等级推进]
     GIFT[用户送出任意付费礼物] --> EVENT_ORDER[按服务端确认成功时间<br/>依次处理同一房间送礼事件]
-    EVENT_ORDER --> ENERGY[按 1 金币等于 10 能量值换算]
+    EVENT_ORDER --> DAY_BIND[绑定整笔礼物所属自然日<br/>重置不得插入跨级拆分事务]
+    DAY_BIND --> ENERGY[按 1 金币等于 10 能量值换算]
     ENERGY --> ADD[按等级顺序分配能量<br/>记录各等级实际分配的阶段贡献]
     ADD --> FULL{当前等级是否充满}
     FULL -- 否 --> CHARGING[主弹窗显示充能中<br/>当前值除以目标值]
@@ -46,7 +47,8 @@ end
 START --> GIFT
 
 subgraph LAUNCH[飞船发射表现]
-    LOCK --> QUEUE{房间动效队列是否为空}
+    LOCK --> LEVEL_QUEUE[按等级从低到高加入逐级展示队列]
+    LEVEL_QUEUE --> QUEUE{房间动效队列是否为空}
     QUEUE -- 是 --> HIDE_PANEL
     QUEUE -- 否 --> INSERT[插入为下一个播放项<br/>不打断当前动效]
     INSERT --> HIDE_PANEL[轮到播放时隐藏主弹窗<br/>并暗化房间背景]
@@ -59,10 +61,13 @@ subgraph LAUNCH[飞船发射表现]
     DROP_ACTION -- 否 --> AUTO_OPEN[3.5秒结束后自动进入结果反馈]
     CLICK_OPEN --> RESULT_READY{奖励是否已全部成功入账}
     AUTO_OPEN --> RESULT_READY
-    RESULT_READY -- 是 --> EFFECT_END[原生中心放大并轻微回弹<br/>展示完整开奖弹窗]
-    RESULT_READY -- 否 --> GRANTING[原生中心放大并轻微回弹<br/>展示奖励发放中]
-    EFFECT_END --> RESTORE_CONTEXT[关闭完整开奖弹窗后恢复房间状态<br/>已完成档位展示MVP结果]
-    GRANTING --> GRANTING_END[用户关闭后恢复房间状态<br/>后续反馈按补发流程处理]
+    RESULT_READY -- 是 --> EFFECT_END[原生中心放大并轻微回弹<br/>展示完整开奖弹窗并等待用户关闭]
+    RESULT_READY -- 否 --> GRANTING[原生中心放大并轻微回弹<br/>展示奖励发放中并等待用户关闭]
+    EFFECT_END --> NEXT_DISPLAY{是否还有下一等级待展示}
+    GRANTING --> NEXT_DISPLAY
+    RESTORE_NO_DROP --> NEXT_DISPLAY
+    NEXT_DISPLAY -- 是 --> QUEUE
+    NEXT_DISPLAY -- 否 --> RESTORE_CONTEXT[恢复房间状态<br/>已完成档位展示MVP结果]
 end
 
 subgraph SETTLEMENT[奖励结算与发放]
@@ -134,4 +139,16 @@ RESET([每日 GMT+3 00:00]) --> CONFIG_SNAPSHOT[生成新自然日配置快照]
 CONFIG_SNAPSHOT --> RESET_ALL[所有房间回到 Lv.1<br/>清空进行中数据及当日状态]
 RESET_ALL --> KEEP_LOCKED[已锁定结算、待补发、通知状态、<br/>MVP公开记录及个人能量仓记录继续保留]
 RESET_ALL --> GIFT
+
+subgraph ROOM_BAN[房间封禁]
+    BAN[房间被封禁] --> KEEP_ENTRY[保留飞船入口与既有进度]
+    BAN --> STOP_CHARGE[停止封禁后的新增充能统计]
+    BAN --> KEEP_ANIMATION[不主动取消已排队或正在播放的动画]
+    KEEP_ENTRY --> ROOM_REQUEST[用户在房内发起任一接口请求]
+    ROOM_REQUEST --> BAN_RESULT{接口是否返回房间封禁}
+    BAN_RESULT -- 否 --> ROOM_ACTION[按原业务继续处理]
+    BAN_RESULT -- 是 --> ABORT_ACTION[终止原请求且不产生房内副作用]
+    ABORT_ACTION --> AUTO_EXIT[客户端自动退出当前房间]
+    AUTO_EXIT --> BAN_TIP[提示：房间已被封禁]
+end
 ```
