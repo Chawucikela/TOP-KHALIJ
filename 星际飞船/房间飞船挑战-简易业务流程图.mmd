@@ -1,40 +1,124 @@
-```mermaid
-flowchart TD
-    A[用户在语音房送出付费礼物] --> A1[按服务端确认时间绑定整笔礼物所属自然日]
-    A1 --> A2[跨级拆分与阶段锁定作为同一事务完成<br/>00:00重置不得插入事务中间]
-    A2 --> B[按1金币等于10能量累计房间进度]
-    B --> C{当前等级是否充满}
-    C -- 否 --> A
-    C -- 是 --> D[锁定阶段贡献与配置快照]
-    D --> E[服务端确定奖励资格、MVP排名及奖励结果]
-    D --> F[播放飞船发射动效<br/>全房在房前台用户可见且不超过4秒]
-    F --> G{当前用户是否有奖励资格}
-    G -- 否 --> H[不展示能量仓掉落<br/>恢复房间状态]
-    G -- 是 --> I[紧接播放3.5秒能量仓掉落<br/>固定10个视觉能量仓且仅播放一次]
-    I --> J{用户是否点击动画区域任意位置}
-    J -- 是 --> K[立即结束本地掉落]
-    J -- 否 --> L[3.5秒结束后自动触发]
-    K --> M{全部应得奖励是否已成功入账}
-    L --> M
-    M -- 是 --> N[开奖弹窗从画面中心放大展开<br/>轻微回弹后展示完整结果]
-    M -- 否 --> O[同样使用中心放大和轻微回弹<br/>展示奖励发放中]
-    N --> P[用户确认关闭并返回房间]
-    O --> P
-    P --> P2{是否还有下一等级待展示}
-    H --> P2
-    P2 -- 是 --> F
-    P2 -- 否 --> P3[本次逐级展示结束]
-    E --> Q{全部应得奖励是否成功入账}
-    Q -- 否 --> R[进入奖励异常待处理<br/>具体重试与补发流程待确认]
-    R --> Q
-    Q -- 是 --> S[生成或更新奖励记录]
-    S --> T[向获奖用户发送奖励到账通知]
+# 房间飞船挑战简易业务流程图
 
-    U[房间被封禁] --> U1[入口与既有进度保留<br/>停止新增充能统计]
-    U --> U2[已排队或播放中的动画不主动取消]
-    U1 --> U3[用户在房内发起任一接口请求]
-    U3 --> U4{接口返回房间封禁}
-    U4 -- 否 --> U5[按原业务继续处理]
-    U4 -- 是 --> U6[终止原请求且不产生房内副作用]
-    U6 --> U7[自动退出房间<br/>提示房间已被封禁]
+> 用于快速讲解主链；特殊礼物、飘屏、封禁和奖励异常分别放在下方独立小图，避免主流程交叉。
+
+## 1. 主流程
+
+```mermaid
+flowchart LR
+    A([用户送出有效付费礼物]) --> B[计算有效贡献<br/>并累计当前等级]
+    B --> C{等级达标?}
+    C -- 否 --> A
+    C -- 是 --> D[锁定阶段贡献<br/>与配置快照]
+    D --> E[确定奖励资格、普通奖励<br/>及MVP Top1—Top3]
+    D --> F[进入下一等级<br/>继续处理溢出能量]
+    D --> G[发送全局飘屏<br/>进入逐级动效队列]
+    E --> H[自动发放奖励]
+    H --> I{全部应得奖励入账?}
+    I -- 否 --> J([失败项异常待处理])
+    I -- 是 --> K[更新奖励记录<br/>发送到账通知]
+    G --> L[发射≤4秒]
+    L --> M{当前用户有奖励资格?}
+    M -- 否 --> N[跳过掉落和开奖]
+    M -- 是 --> O[掉落3.5秒<br/>点击或结束后展示结果]
+    N --> P{还有下一等级?}
+    O --> P
+    P -- 是 --> L
+    P -- 否 --> Q([本次展示结束])
+
+    classDef startEnd fill:#E8F5E9,stroke:#2E7D32,color:#1B5E20;
+    classDef decision fill:#FFF8E1,stroke:#F9A825,color:#5D4037;
+    classDef process fill:#E3F2FD,stroke:#1976D2,color:#0D47A1;
+    classDef exception fill:#FFEBEE,stroke:#C62828,color:#B71C1C;
+    class A,J,Q startEnd;
+    class C,I,M,P decision;
+    class B,D,E,F,G,H,K,L,N,O process;
+```
+
+## 2. 礼物有效贡献口径
+
+```mermaid
+flowchart LR
+    A([礼物确认成功]) --> B{礼物类型}
+    B -- 普通付费礼物 --> C[有效贡献金币=礼物金币值]
+    B -- 幸运礼物 --> D[有效贡献金币=礼物金币值÷10后向下取整]
+    C --> E[1有效贡献金币=1能量]
+    D --> E
+    E --> F[房间能量与个人贡献<br/>使用同一结果]
+
+    classDef startEnd fill:#E8F5E9,stroke:#2E7D32,color:#1B5E20;
+    classDef decision fill:#FFF8E1,stroke:#F9A825,color:#5D4037;
+    classDef process fill:#E3F2FD,stroke:#1976D2,color:#0D47A1;
+    class A startEnd;
+    class B decision;
+    class C,D,E,F process;
+```
+
+## 3. CP结交礼物
+
+```mermaid
+flowchart LR
+    A([送出CP结交礼物]) --> B[记录送出时房间实例ID]
+    B --> C{收礼者确认关系?}
+    C -- 否 --> D([暂不计入飞船玩法])
+    C -- 是 --> E{原房间正常且<br/>当日L5未完成?}
+    E -- 否 --> F([不计入飞船贡献])
+    E -- 是 --> G[按确认时间归属自然日<br/>计入原房间当前等级]
+    G --> H([进入正常礼物处理队列])
+
+    classDef startEnd fill:#E8F5E9,stroke:#2E7D32,color:#1B5E20;
+    classDef decision fill:#FFF8E1,stroke:#F9A825,color:#5D4037;
+    classDef process fill:#E3F2FD,stroke:#1976D2,color:#0D47A1;
+    class A,D,F,H startEnd;
+    class C,E decision;
+    class B,G process;
+```
+
+## 4. 全局飘屏点击
+
+```mermaid
+flowchart LR
+    A([用户点击阶段解锁飘屏]) --> B{当前所在状态}
+    B -- 已在所属房间 --> C([无交互])
+    B -- 所属房间最小化 --> D[校验后恢复房间]
+    B -- 不在所属房间 --> E[弹出加入房间确认]
+    E --> F{取消或加入?}
+    F -- 取消 --> G([保持当前状态])
+    F -- 加入 --> H{封禁、密码房<br/>及可进入状态校验}
+    H -- 可进入 --> I([进入对应房间])
+    H -- 密码房 --> J([进入密码验证流程])
+    H -- 不可进入 --> K([阻止跳转并提示])
+    D --> I
+
+    classDef startEnd fill:#E8F5E9,stroke:#2E7D32,color:#1B5E20;
+    classDef decision fill:#FFF8E1,stroke:#F9A825,color:#5D4037;
+    classDef process fill:#E3F2FD,stroke:#1976D2,color:#0D47A1;
+    classDef exception fill:#FFEBEE,stroke:#C62828,color:#B71C1C;
+    class A,C,G,I,J,K startEnd;
+    class B,F,H decision;
+    class D,E process;
+```
+
+## 5. 房间封禁
+
+```mermaid
+flowchart LR
+    A([房间被封禁]) --> B[保留入口和既有进度]
+    A --> C[停止新增充能与个人贡献]
+    A --> D[不主动取消已排队或播放中的动画]
+    B --> E[用户发起房内接口请求]
+    C --> E
+    E --> F{接口返回封禁?}
+    F -- 否 --> G([按原业务继续])
+    F -- 是 --> H[终止原请求<br/>不产生房内副作用]
+    H --> I([自动退房并提示“房间已被封禁”])
+
+    classDef startEnd fill:#E8F5E9,stroke:#2E7D32,color:#1B5E20;
+    classDef decision fill:#FFF8E1,stroke:#F9A825,color:#5D4037;
+    classDef process fill:#E3F2FD,stroke:#1976D2,color:#0D47A1;
+    classDef exception fill:#FFEBEE,stroke:#C62828,color:#B71C1C;
+    class A,G,I startEnd;
+    class F decision;
+    class B,C,D,E process;
+    class H exception;
 ```

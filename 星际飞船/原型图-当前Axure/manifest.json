@@ -1,13 +1,14 @@
 {
-  "documentId": "cdcb40df-0bb7-48cf-9dac-dddac760ac63",
-  "fileName": "TOP KHALIJ",
-  "filePath": "/Users/gorkella/Documents/Axure/TOP KHALIJ/TOP KHALIJ.rp",
+  "documentId": "08d607d0-26a6-4411-9310-711ae9ed43a2",
+  "fileName": "房间飞船挑战",
+  "filePath": "/Users/gorkella/Documents/Axure/TOP KHALIJ/房间飞船挑战.rp",
   "scopeFolder": "房间飞船挑战",
   "pages": [
     {
       "pageId": "8903ea53-0bd9-449b-a6fe-eb94ceb62f48",
       "pageName": "入口",
-      "file": "01-入口.png"
+      "file": "01-入口.png",
+      "captureScope": "wholeCanvasWithAnnotations"
     },
     {
       "pageId": "340e93ed-6413-4428-836c-b256c08016ff",
@@ -29,32 +30,51 @@
           "diagramId": "b1737219-21c3-4c83-b36d-87233540cd03",
           "file": "02-3-主弹窗-已充满.png"
         }
-      ]
+      ],
+      "captureScope": "wholeCanvasWithAnnotations"
     },
     {
       "pageId": "a8cca0ca-4a20-453f-857d-2bf71219bbdb",
       "pageName": "规则弹窗",
-      "file": "03-规则弹窗.png"
+      "file": "03-规则弹窗.png",
+      "captureScope": "wholeCanvasWithAnnotations"
     },
     {
       "pageId": "5d5a1fe0-4fe4-449e-896e-d9b57cf77d5c",
       "pageName": "奖励配置",
-      "file": "07-奖励配置.png"
+      "file": "07-奖励配置.png",
+      "captureScope": "wholeCanvasWithAnnotations"
     },
     {
       "pageId": "d4ecca39-9b2e-4bb8-9a46-89401f93b4d6",
       "pageName": "发射与能量仓掉落效果",
-      "file": "04-发射与能量仓掉落效果.png"
+      "file": "04-发射与能量仓掉落效果.png",
+      "captureScope": "wholeCanvasWithAnnotations"
     },
     {
       "pageId": "34410154-49a2-4b11-bf8e-bdd35d04c0e0",
       "pageName": "开奖弹窗",
-      "file": "05-开奖弹窗.png"
+      "file": "05-开奖弹窗.png",
+      "captureScope": "wholeCanvasWithAnnotations",
+      "states": [
+        {
+          "stateName": "非MVP",
+          "diagramId": "cf9d129f-7503-41e8-933c-1e6cdd0af1fa",
+          "file": "05-1-开奖弹窗-非MVP.png"
+        }
+      ]
     },
     {
       "pageId": "0bbf72c9-6b4a-4a52-9c3b-e60ba5f486de",
-      "pageName": "MVP获奖记录弹窗",
-      "file": "06-MVP获奖记录弹窗.png"
+      "pageName": "获奖记录弹窗",
+      "file": "06-获奖记录弹窗.png",
+      "captureScope": "wholeCanvasWithAnnotations"
+    },
+    {
+      "pageId": "8c4e2e86-93b5-4e6f-9ea0-62eb487f7afb",
+      "pageName": "飘屏",
+      "file": "08-飘屏.png",
+      "captureScope": "wholeCanvasWithAnnotations"
     }
   ]
 }

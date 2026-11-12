@@ -1,154 +1,265 @@
+# 房间飞船挑战业务流程图
 
+> 阅读顺序：先看“业务闭环总览”，再按需查看充能结算、动效反馈、飘屏、特殊礼物及封禁流程。各子图使用相同业务对象和规则口径。
+
+## 1. 业务闭环总览
+
+```mermaid
+flowchart LR
+    A([用户送出有效付费礼物]) --> B[计算有效贡献<br/>并累计当前等级能量]
+    B --> C{当前等级达标?}
+    C -- 否 --> D[更新房间进度<br/>与个人阶段贡献]
+    D --> A
+    C -- 是 --> E[锁定阶段贡献<br/>与配置快照]
+
+    E --> F[奖励结算<br/>资格·普通奖励·MVP]
+    E --> G[等级推进<br/>处理溢出能量]
+    E --> H[表现与通知<br/>飘屏·发射·掉落·开奖]
+
+    F --> I{全部应得奖励<br/>成功入账?}
+    I -- 否 --> J[失败奖励项<br/>进入异常待处理]
+    I -- 是 --> K[更新奖励记录<br/>发送到账通知]
+
+    G --> L{是否完成L5?}
+    L -- 否 --> A
+    L -- 是 --> M([今日全部发射完成])
+
+    classDef startEnd fill:#E8F5E9,stroke:#2E7D32,color:#1B5E20;
+    classDef decision fill:#FFF8E1,stroke:#F9A825,color:#5D4037;
+    classDef process fill:#E3F2FD,stroke:#1976D2,color:#0D47A1;
+    classDef exception fill:#FFEBEE,stroke:#C62828,color:#B71C1C;
+    class A,M startEnd;
+    class C,I,L decision;
+    class B,D,E,F,G,H,K process;
+    class J exception;
+```
+
+## 2. 送礼充能、跨级与跨日事务
 
 ```mermaid
 flowchart TD
-    START([用户进入语音房]) --> ENTRY[房间右下角展示飞船挑战入口]
-    ENTRY --> OPEN[点击入口打开飞船主弹窗]
-OPEN --> VIEW[查看五级飞船、当前进度与奖励预览]
-VIEW --> SWITCH[切换 Lv.1 至 Lv.5 查看各档位]
-VIEW --> REWARD_PREVIEW[按当前规则布局分区展示<br/>普通能量仓奖池及Top1至Top3共用MVP奖励]
-REWARD_PREVIEW --> VIEW
-SWITCH --> LEVEL_STATE{所选等级当前状态}
-LEVEL_STATE -- 当前充能等级 --> STATE_CHARGING[显示飞船充能中<br/>当前值除以目标值]
-LEVEL_STATE -- 尚未启动等级 --> STATE_WAITING[显示飞船待启动]
-LEVEL_STATE -- 已完成等级 --> STATE_FINISHED[显示飞船已发射<br/>及该阶段 MVP 结果]
-STATE_CHARGING --> VIEW
-STATE_WAITING --> VIEW
-STATE_FINISHED --> VIEW
-VIEW --> RULES[点击规则入口查看玩法规则]
-RULES --> VIEW
-VIEW --> RECORDS[点击奖励记录入口]
-RECORDS --> RECORD_TAB{选择记录页签}
-RECORD_TAB -- MVP奖励 --> RECORD_LIST[查看当前房间近30天MVP公开记录<br/>含贡献值及MVP奖励]
-RECORD_TAB -- 能量仓奖励 --> SELF_RECORDS[查看当前用户近30天能量仓记录<br/>含贡献值及普通能量仓奖励]
-RECORD_LIST --> PROFILE[点击头像或昵称进入用户资料页]
-RECORD_LIST --> VIEW
-SELF_RECORDS --> VIEW
+    A([收到待处理礼物事件]) --> B[按服务端确认成功时间排序<br/>同刻使用稳定唯一事件顺序]
+    B --> C[绑定整笔礼物所属GMT+3自然日]
+    C --> D{礼物类型}
 
-subgraph CHARGE[房间充能与等级推进]
-    GIFT[用户送出任意付费礼物] --> EVENT_ORDER[按服务端确认成功时间<br/>依次处理同一房间送礼事件]
-    EVENT_ORDER --> DAY_BIND[绑定整笔礼物所属自然日<br/>重置不得插入跨级拆分事务]
-    DAY_BIND --> ENERGY[按 1 金币等于 10 能量值换算]
-    ENERGY --> ADD[按等级顺序分配能量<br/>记录各等级实际分配的阶段贡献]
-    ADD --> FULL{当前等级是否充满}
-    FULL -- 否 --> CHARGING[主弹窗显示充能中<br/>当前值除以目标值]
-    CHARGING --> GIFT
-    FULL -- 是 --> READY_LAUNCH[主弹窗短暂展示已充满/待发射<br/>飞船点火蓄力0.3至0.5秒]
-    READY_LAUNCH --> LOCK[锁定本阶段进度、贡献用户及排名数据]
-    LOCK --> SNAPSHOT[锁定阶段贡献数据及当日配置快照]
-    SNAPSHOT --> LEVEL{当前是否为 Lv.5}
-    LEVEL -- 否 --> NEXT[业务状态立即进入下一等级]
-    NEXT --> OVERFLOW[按实际剩余能量拆分贡献<br/>继续分配至下一等级]
-    OVERFLOW --> GIFT
-    LEVEL -- 是 --> COMPLETE[进入今日全部发射完成状态]
-    COMPLETE --> STOP[Lv.5 溢出能量及当日后续送礼<br/>不再计入飞船进度]
-end
+    D -- 普通付费礼物 --> E[有效贡献金币=礼物金币值]
+    D -- 幸运礼物 --> F[有效贡献金币=礼物金币值÷10后向下取整]
+    F --> G[房间能量与个人贡献<br/>均使用同一折算值]
+    E --> H[按1有效贡献金币=1能量换算]
+    G --> H
 
-START --> GIFT
+    H --> I[从当前等级开始逐级分配能量<br/>仅记录实际分配到该等级的贡献]
+    I --> J{当前等级达标?}
+    J -- 否 --> K[提交当前进度与个人贡献]
+    K --> Z([本笔礼物处理完成])
 
-subgraph LAUNCH[飞船发射表现]
-    LOCK --> LEVEL_QUEUE[按等级从低到高加入逐级展示队列]
-    LEVEL_QUEUE --> QUEUE{房间动效队列是否为空}
-    QUEUE -- 是 --> HIDE_PANEL
-    QUEUE -- 否 --> INSERT[插入为下一个播放项<br/>不打断当前动效]
-    INSERT --> HIDE_PANEL[轮到播放时隐藏主弹窗<br/>并暗化房间背景]
-    HIDE_PANEL --> LAUNCH_FULL[播放当前档位房间级发射动效<br/>时长不超过4秒且全房可见]
-    LAUNCH_FULL --> ELIGIBLE_VIEW{当前用户是否有奖励资格}
-    ELIGIBLE_VIEW -- 否 --> RESTORE_NO_DROP[不展示掉落层<br/>恢复房间状态]
-    ELIGIBLE_VIEW -- 是 --> RAIN[紧接播放一次3.5秒全屏掉落动效<br/>固定10个视觉能量仓且X轴位置随机]
-    RAIN --> DROP_ACTION{是否在3.5秒内<br/>点击动画区域任意位置}
-    DROP_ACTION -- 是 --> CLICK_OPEN[停止本地掉落并打开已确定结果]
-    DROP_ACTION -- 否 --> AUTO_OPEN[3.5秒结束后自动进入结果反馈]
-    CLICK_OPEN --> RESULT_READY{奖励是否已全部成功入账}
-    AUTO_OPEN --> RESULT_READY
-    RESULT_READY -- 是 --> EFFECT_END[原生中心放大并轻微回弹<br/>展示完整开奖弹窗并等待用户关闭]
-    RESULT_READY -- 否 --> GRANTING[原生中心放大并轻微回弹<br/>展示奖励发放中并等待用户关闭]
-    EFFECT_END --> NEXT_DISPLAY{是否还有下一等级待展示}
-    GRANTING --> NEXT_DISPLAY
-    RESTORE_NO_DROP --> NEXT_DISPLAY
-    NEXT_DISPLAY -- 是 --> QUEUE
-    NEXT_DISPLAY -- 否 --> RESTORE_CONTEXT[恢复房间状态<br/>已完成档位展示MVP结果]
-end
+    J -- 是 --> L[锁定当前阶段进度、贡献<br/>排名数据与当日配置快照]
+    L --> M{当前等级是否L5?}
+    M -- 否 --> N[立即创建并进入下一等级]
+    N --> O{礼物是否仍有溢出能量?}
+    O -- 是 --> I
+    O -- 否 --> Z
+    M -- 是 --> P[进入今日全部发射完成]
+    P --> Q[丢弃L5溢出能量<br/>当日后续送礼不再计入]
+    Q --> Z
 
-subgraph SETTLEMENT[奖励结算与发放]
-    LOCK --> USERS[统计本阶段每名用户的<br/>拆分后阶段贡献金币]
-    USERS --> THRESHOLD{是否达到五级统一的<br/>固定金币准入门槛}
-    THRESHOLD -- 否 --> NO_REWARD[贡献仍计入房间进度<br/>不获得奖励且不参与 MVP 排名]
-    THRESHOLD -- 是 --> ELIGIBLE[进入本阶段达标贡献用户集合]
-    ELIGIBLE --> WAREHOUSE[为每名达标用户随机确定<br/>一份能量仓奖励]
-    ELIGIBLE --> RANK[按阶段贡献金币降序排名<br/>同值按最终贡献完成时间升序<br/>仍同值按用户ID数值升序]
-    RANK --> TOP3[确定 MVP Top1 至 Top3<br/>达标用户不足 3 人时全部达标用户获奖]
-    WAREHOUSE --> MERGE[汇总用户本阶段应得奖励]
-    TOP3 --> MERGE
-    MERGE --> IS_MVP{用户是否为 MVP}
-    IS_MVP -- 否 --> NORMAL_REWARD[应得奖励仅包含能量仓奖励]
-    IS_MVP -- 是 --> DOUBLE_REWARD[应得奖励包含普通能量仓奖励<br/>及Top1至Top3共用内容的MVP额外能量仓]
-    NORMAL_REWARD --> DEDUP[按玩法、房间实例、自然日、等级、阶段结算、<br/>用户、奖励来源及具体奖励项防重]
-    DOUBLE_REWARD --> DEDUP
-    DEDUP --> SENT{奖励是否已成功发放}
-    SENT -- 是 --> NO_REPEAT[不重复发奖、不重复生成中奖结果]
-    SENT -- 否 --> AUTO_SEND[系统自动发放全部应得奖励]
-    AUTO_SEND --> SUCCESS{全部应得奖励是否发放成功}
-    SUCCESS -- 否 --> RETRY[失败奖励项进入异常待处理<br/>具体重试与补发流程待确认]
-    RETRY --> SUCCESS
-    SUCCESS -- 是 --> RESULT[完成该获奖用户结算<br/>记录完整中奖结果]
-    RESULT --> ALL_WINNERS[全部应得奖励成功入账后<br/>向所有获奖用户发送通知]
-    RESULT --> RECORD_TYPE{该用户本阶段获得哪些奖励}
-    RECORD_TYPE -- 仅普通能量仓 --> SAVE_SELF[生成或更新本人的<br/>能量仓奖励记录]
-    RECORD_TYPE -- 普通能量仓及MVP奖励 --> SAVE_BOTH[分别生成或更新本人能量仓记录<br/>及MVP公开记录]
-    ALL_WINNERS --> NOTICE_TYPE{用户是否获得 MVP 奖励}
-    NOTICE_TYPE -- 否 --> NORMAL_NOTICE[发送普通奖励通知<br/>告知能量仓奖励已到账]
-    NOTICE_TYPE -- 是 --> MVP_NOTICE[发送 MVP 奖励通知<br/>告知能量仓及 MVP 奖励已到账]
-    NORMAL_NOTICE --> NOTICE_SUCCESS{通知是否发送成功}
-    MVP_NOTICE --> NOTICE_SUCCESS
-    NOTICE_SUCCESS -- 是 --> NOTICE_DONE[同一用户、房间、自然日及等级<br/>只发送一条奖励发放通知]
-    NOTICE_SUCCESS -- 否 --> NOTICE_PENDING[进入通知异常待处理<br/>具体重试与补偿流程待确认]
-    NOTICE_PENDING --> NOTICE_ERROR[保留通知异常记录<br/>不回滚已到账奖励]
-end
+    R([GMT+3 00:00重置]) -. 不得插入单笔礼物事务 .-> C
+    Z --> S[旧日事务提交后<br/>才允许初始化新自然日L1]
 
-subgraph POPUP[中奖弹窗反馈]
-    POP_READY[中奖结果进入展示判断] --> PRESENT{能量仓掉落期间用户是否仍在当前房间<br/>且 App 处于前台}
-    PRESENT -- 否 --> ARRIVED[金币进入账户，物料或道具进入背包<br/>不补弹中奖弹窗]
-    PRESENT -- 是 --> CLICK_DROP{用户是否在3.5秒内<br/>点击动画区域任意位置}
-    CLICK_DROP -- 否 --> NO_POPUP[3.5秒掉落结束后<br/>自动展开中奖弹窗]
-    NO_POPUP --> POP_TYPE
-    CLICK_DROP -- 是 --> POP_TYPE{用户是否获得 MVP 奖励}
-    POP_TYPE -- 否 --> NORMAL_POP[普通中奖弹窗<br/>展示飞船等级、能量仓奖励图标与数量]
-    POP_TYPE -- 是 --> MVP_POP[MVP 中奖弹窗<br/>展示 MVP TopN 身份反馈]
-    MVP_POP --> GRID[同一奖励区域展示能量仓及 MVP 奖励<br/>最多 8 项，4 列乘 2 行]
-    NORMAL_POP --> FEEDBACK[提示奖励已自动发放]
-    GRID --> FEEDBACK
-    FEEDBACK --> CONFIRM[点击确认仅关闭弹窗<br/>不重新抽奖、不请求领取或发奖]
-end
+    classDef startEnd fill:#E8F5E9,stroke:#2E7D32,color:#1B5E20;
+    classDef decision fill:#FFF8E1,stroke:#F9A825,color:#5D4037;
+    classDef process fill:#E3F2FD,stroke:#1976D2,color:#0D47A1;
+    classDef rule fill:#F3E5F5,stroke:#7B1FA2,color:#4A148C;
+    class A,Z,R startEnd;
+    class D,J,M,O decision;
+    class B,C,E,F,G,H,I,K,L,N,P,Q,S process;
+```
 
-RESULT --> POP_READY
+## 3. 阶段奖励结算与发放
 
-subgraph MVP_HISTORY[奖励记录]
-    SAVE_BOTH --> SAVE_MVP[生成或更新MVP公开记录]
-    SAVE_MVP --> HISTORY_FIELDS[记录发放时间、用户头像及昵称、<br/>飞船等级、阶段贡献值和房间 ID]
-    HISTORY_FIELDS --> KEEP[展示近30天记录及MVP奖励<br/>时间精确到分钟，贡献值使用K、M、B缩写]
-    KEEP --> RECORD_LIST
-    SAVE_BOTH --> SAVE_SELF_MVP[生成或更新该用户本人的<br/>普通能量仓记录]
-    SAVE_SELF_MVP --> SELF_FIELDS
-    SAVE_SELF --> SELF_FIELDS[记录发放时间、飞船等级、阶段贡献值、<br/>房间ID及普通能量仓奖励]
-    SELF_FIELDS --> SELF_KEEP[仅向当前用户展示近30天记录]
-    SELF_KEEP --> SELF_RECORDS
-end
+```mermaid
+flowchart TD
+    A([阶段达标并完成数据锁定]) --> B[统计每名用户的<br/>拆分后阶段贡献金币]
+    B --> C{贡献是否达到44,444金币?}
 
-RESET([每日 GMT+3 00:00]) --> CONFIG_SNAPSHOT[生成新自然日配置快照]
-CONFIG_SNAPSHOT --> RESET_ALL[所有房间回到 Lv.1<br/>清空进行中数据及当日状态]
-RESET_ALL --> KEEP_LOCKED[已锁定结算、待补发、通知状态、<br/>MVP公开记录及个人能量仓记录继续保留]
-RESET_ALL --> GIFT
+    C -- 否 --> D[无普通奖励<br/>不参与MVP排名]
+    C -- 是 --> E[进入达标用户集合]
 
-subgraph ROOM_BAN[房间封禁]
-    BAN[房间被封禁] --> KEEP_ENTRY[保留飞船入口与既有进度]
-    BAN --> STOP_CHARGE[停止封禁后的新增充能统计]
-    BAN --> KEEP_ANIMATION[不主动取消已排队或正在播放的动画]
-    KEEP_ENTRY --> ROOM_REQUEST[用户在房内发起任一接口请求]
-    ROOM_REQUEST --> BAN_RESULT{接口是否返回房间封禁}
-    BAN_RESULT -- 否 --> ROOM_ACTION[按原业务继续处理]
-    BAN_RESULT -- 是 --> ABORT_ACTION[终止原请求且不产生房内副作用]
-    ABORT_ACTION --> AUTO_EXIT[客户端自动退出当前房间]
-    AUTO_EXIT --> BAN_TIP[提示：房间已被封禁]
-end
+    E --> F[普通能量仓：按奖励项概率抽取<br/>3个不重复奖励，未命中由兜底补齐]
+    E --> G[按贡献降序→最终贡献完成时间升序<br/>→用户ID数值升序确定Top1—Top3]
+
+    F --> H[汇总普通能量仓奖励]
+    G --> I{是否为MVP Top1—Top3?}
+    I -- 否 --> J[无MVP额外奖励]
+    I -- 是 --> K[追加同等级共用配置的<br/>MVP额外能量仓]
+
+    H --> L[形成用户本阶段应得奖励清单]
+    J --> L
+    K --> L
+    L --> M[按玩法、房间实例、自然日、等级、阶段结算、<br/>用户、奖励来源、具体奖励项校验防重]
+    M --> N{奖励项是否已成功发放?}
+    N -- 是 --> O[跳过该奖励项]
+    N -- 否 --> P[自动发放未成功奖励项]
+    P --> Q{用户全部应得奖励<br/>是否成功入账?}
+    Q -- 否 --> R[仅失败项进入异常待处理<br/>重试与补发方案待确认]
+    Q -- 是 --> S[完成用户阶段结算]
+
+    S --> T{用户获得的奖励类型}
+    T -- 仅普通能量仓 --> U[生成或更新本人能量仓记录]
+    T -- 普通能量仓+MVP --> V[分别更新本人能量仓记录<br/>与MVP公开记录]
+    S --> W[向该获奖用户发送到账通知]
+    W --> X{通知是否成功?}
+    X -- 是 --> Y[标记该阶段该用户通知完成]
+    X -- 否 --> AA[记录通知异常<br/>不回滚已到账奖励]
+
+    D --> AB([该用户阶段结算结束])
+    O --> AB
+    U --> AB
+    V --> AB
+    Y --> AB
+    AA --> AB
+    R --> AC([等待后续重试或人工补发])
+
+    classDef startEnd fill:#E8F5E9,stroke:#2E7D32,color:#1B5E20;
+    classDef decision fill:#FFF8E1,stroke:#F9A825,color:#5D4037;
+    classDef process fill:#E3F2FD,stroke:#1976D2,color:#0D47A1;
+    classDef exception fill:#FFEBEE,stroke:#C62828,color:#B71C1C;
+    class A,AB,AC startEnd;
+    class C,I,N,Q,T,X decision;
+    class B,D,E,F,G,H,J,K,L,M,O,P,S,U,V,W,Y process;
+    class R,AA exception;
+```
+
+## 4. 发射、掉落与逐级结果反馈
+
+```mermaid
+flowchart TD
+    A([阶段锁定]) --> B[按L1→L5顺序加入展示队列]
+    B --> C{当前是否有其他房间动效?}
+    C -- 是 --> D[排入下一播放位<br/>不打断当前动效]
+    C -- 否 --> E[开始当前等级展示]
+    D --> E
+
+    E --> F[隐藏飞船主弹窗<br/>暗化房间背景]
+    F --> G[播放当前档位发射动效<br/>≤4秒·淡入淡出·不拦截点击]
+    G --> H{当前用户是否有<br/>该等级奖励资格?}
+
+    H -- 否 --> I[跳过能量仓掉落和开奖]
+    H -- 是 --> J[播放3.5秒全屏掉落<br/>10个视觉仓·整层拦截点击]
+    J --> K{3.5秒内点击动画区域?}
+    K -- 是 --> L[锁定首次点击<br/>停止本地掉落]
+    K -- 否 --> M[掉落结束后自动触发结果反馈]
+
+    L --> N{全部应得奖励是否入账?}
+    M --> N
+    N -- 是 --> O[中心放大+轻微回弹<br/>展示完整开奖结果]
+    N -- 否 --> P[相同展开动画<br/>展示“奖励发放中”]
+
+    O --> Q[等待用户关闭当前等级反馈]
+    P --> Q
+    I --> R{还有下一等级待展示?}
+    Q --> R
+    R -- 是 --> B
+    R -- 否 --> S[恢复房间状态<br/>本次逐级展示结束]
+    S --> T([展示流程结束])
+
+    classDef startEnd fill:#E8F5E9,stroke:#2E7D32,color:#1B5E20;
+    classDef decision fill:#FFF8E1,stroke:#F9A825,color:#5D4037;
+    classDef process fill:#E3F2FD,stroke:#1976D2,color:#0D47A1;
+    classDef feedback fill:#F3E5F5,stroke:#7B1FA2,color:#4A148C;
+    class A,T startEnd;
+    class C,H,K,N,R decision;
+    class B,D,E,F,G,I,J,L,M,Q,S process;
+    class O,P feedback;
+```
+
+## 5. 阶段解锁全局飘屏
+
+```mermaid
+flowchart TD
+    A([阶段首次完成锁定]) --> B[发送全局飘屏<br/>头像·房间名称及ID·解锁文案<br/>带等级标识的飞船缩略图]
+    B --> C{用户是否点击飘屏?}
+    C -- 否 --> D([飘屏展示结束])
+    C -- 是 --> E{点击时所在状态}
+
+    E -- 已在所属房间 --> F[无交互]
+    E -- 所属房间最小化 --> G[执行进房状态校验]
+    E -- 不在所属房间 --> H[弹出加入房间二次确认]
+
+    H --> I{用户选择}
+    I -- 取消 --> J[关闭弹窗并保持当前状态]
+    I -- 加入 --> G
+
+    G --> K{目标房间状态}
+    K -- 可直接进入 --> L[进入或恢复对应房间]
+    K -- 密码房 --> M[进入现有密码验证流程]
+    K -- 已封禁/其他不可进入 --> N[阻止跳转并按房间规则提示]
+
+    F --> O([交互结束])
+    J --> O
+    L --> O
+    M --> O
+    N --> O
+
+    classDef startEnd fill:#E8F5E9,stroke:#2E7D32,color:#1B5E20;
+    classDef decision fill:#FFF8E1,stroke:#F9A825,color:#5D4037;
+    classDef process fill:#E3F2FD,stroke:#1976D2,color:#0D47A1;
+    classDef exception fill:#FFEBEE,stroke:#C62828,color:#B71C1C;
+    class A,D,O startEnd;
+    class C,E,I,K decision;
+    class B,F,G,H,J,L,M process;
+    class N exception;
+```
+
+## 6. CP结交礼物延迟确认
+
+```mermaid
+flowchart TD
+    A([送礼者送出CP结交礼物]) --> B[记录送礼者当时所在的房间实例ID]
+    B --> C[暂不计入飞船玩法]
+    C --> D{收礼者是否确认关系?}
+    D -- 否 --> E([继续等待确认])
+    D -- 是 --> F{送出时房间在确认时刻<br/>是否正常且当日L5未完成?}
+    F -- 否 --> G[不计入房间能量、个人贡献、<br/>奖励资格或MVP排名]
+    F -- 是 --> H[按确认成功时间归属自然日]
+    H --> I[计入送出时房间<br/>确认时刻对应的当前等级]
+    I --> J[进入同房间礼物顺序队列<br/>按正常跨级事务处理]
+    J --> K([处理结束])
+    G --> K
+
+    classDef startEnd fill:#E8F5E9,stroke:#2E7D32,color:#1B5E20;
+    classDef decision fill:#FFF8E1,stroke:#F9A825,color:#5D4037;
+    classDef process fill:#E3F2FD,stroke:#1976D2,color:#0D47A1;
+    classDef exception fill:#FFEBEE,stroke:#C62828,color:#B71C1C;
+    class A,E,K startEnd;
+    class D,F decision;
+    class B,C,H,I,J process;
+    class G exception;
+```
+
+## 7. 房间封禁
+
+```mermaid
+flowchart TD
+    A([房间被封禁]) --> B[保留入口与封禁前既有进度]
+    A --> C[停止封禁后的新增房间能量<br/>与个人阶段贡献统计]
+    A --> D[不主动取消已排队<br/>或正在播放的动画]
+
+    B --> E[用户在房内发起任一接口请求]
+    C --> E
+    E --> F{接口是否返回房间封禁?}
+    F -- 否 --> G[按原业务继续处理]
+    F -- 是 --> H[终止原请求<br/>不产生房内副作用]
+    H --> I[客户端自动退出房间]
+    I --> J[提示“房间已被封禁”]
+    J --> K([封禁处理结束])
+
+    classDef startEnd fill:#E8F5E9,stroke:#2E7D32,color:#1B5E20;
+    classDef decision fill:#FFF8E1,stroke:#F9A825,color:#5D4037;
+    classDef process fill:#E3F2FD,stroke:#1976D2,color:#0D47A1;
+    classDef exception fill:#FFEBEE,stroke:#C62828,color:#B71C1C;
+    class A,K startEnd;
+    class F decision;
+    class B,C,D,E,G process;
+    class H,I,J exception;
 ```
