@@ -1,0 +1,120 @@
+{
+  "sourceRp": "/Users/gorkella/Documents/Axure/TOP KHALIJ/礼物计数器.rp",
+  "businessName": "钻石计数器",
+  "documentId": "3ca2a140-1ebb-409c-8358-c8331beaa2ef",
+  "pageIds": {
+    "房主/管理员视角": "d0dec37a-50d7-4a53-bbf1-023cd94073bc",
+    "普通用户视角": "27836cba-e5bc-4b76-94b6-7dfb6886b74e"
+  },
+  "captureRule": "按当前活源业务节点导出；排除黄色旁注、Connector和状态标题；嵌套榜单递归展开叶子控件；原型仅画组件时标记组件级",
+  "assets": [
+    {
+      "file": "01-功能入口.png",
+      "page": "房主/管理员视角",
+      "scope": "完整手机",
+      "width": 360,
+      "height": 779,
+      "bytes": 257282,
+      "sha256": "f9e1d5c08b5c2839c11c9513258580f8242dc9be57d8cbb5c6c442fbc0278ddc"
+    },
+    {
+      "file": "02-管理端-未开启.png",
+      "page": "房主/管理员视角",
+      "scope": "完整手机",
+      "width": 360,
+      "height": 793,
+      "bytes": 202761,
+      "sha256": "465d6eb997b9d10734e2ec432a9aef32554efc32627be7e7027bc51bc7a574e8"
+    },
+    {
+      "file": "03-管理端-自定义时间选择器.png",
+      "page": "房主/管理员视角",
+      "scope": "完整手机+二级选择器",
+      "width": 360,
+      "height": 793,
+      "bytes": 147484,
+      "sha256": "a5e93d99ed255bf0fd243e8fc9c52d0f76b1abfb2bcfdd09e9315ae4386bcc6d"
+    },
+    {
+      "file": "04-管理端-已设置自定义时间.png",
+      "page": "房主/管理员视角",
+      "scope": "完整手机；保留当前原型可见状态",
+      "width": 360,
+      "height": 793,
+      "bytes": 199993,
+      "sha256": "0e13645ea9139cd25d121a66cedd387e6af6d71f6a63e15f8999d7f301510b16"
+    },
+    {
+      "file": "05-管理端-运行中.png",
+      "page": "房主/管理员视角",
+      "scope": "完整手机",
+      "width": 360,
+      "height": 793,
+      "bytes": 213151,
+      "sha256": "58e895d3592eea7a4b398b97e147d3a3063d9889db4f05cf7259dc8a8dbeff42"
+    },
+    {
+      "file": "06-麦位计数样式.png",
+      "page": "房主/管理员视角",
+      "scope": "完整手机",
+      "width": 360,
+      "height": 793,
+      "bytes": 436563,
+      "sha256": "18fef7de8ee4104d3de1d78070827806965111b9be7f302677465c103bbd8e75"
+    },
+    {
+      "file": "07-Clear确认组件.png",
+      "page": "房主/管理员视角",
+      "scope": "组件级",
+      "width": 300,
+      "height": 144,
+      "bytes": 10980,
+      "sha256": "b7ee25c5835b0c7e1b50060f0fac2bd7753b90b46fd4819a751c0b2b74cf78e8"
+    },
+    {
+      "file": "08-End确认组件.png",
+      "page": "房主/管理员视角",
+      "scope": "组件级",
+      "width": 300,
+      "height": 144,
+      "bytes": 9280,
+      "sha256": "3ba79ab511ceb07e4934e65fbc6a36715a5177b9a64e93c2d03e70288f273489"
+    },
+    {
+      "file": "09-榜单有数据组件.png",
+      "page": "双视角共用",
+      "scope": "组件级；1-9名完整",
+      "width": 300,
+      "height": 424,
+      "bytes": 40584,
+      "sha256": "938668d9116e0236a2234c28c3c0525946810efe0c3f5904963d0b179d48bc5c"
+    },
+    {
+      "file": "10-榜单空态组件.png",
+      "page": "双视角共用",
+      "scope": "组件级",
+      "width": 300,
+      "height": 424,
+      "bytes": 11942,
+      "sha256": "dde36ed6962975aa3a3226cad376fc8f435725359cb45f5f951e8b5fa648feb1"
+    },
+    {
+      "file": "11-普通用户-未开启.png",
+      "page": "普通用户视角",
+      "scope": "完整手机",
+      "width": 360,
+      "height": 793,
+      "bytes": 208929,
+      "sha256": "e73fcffb05b0fc7eb8e3c5138617f0d0ce76384071e8bc14d5d7daaf4275d6f3"
+    },
+    {
+      "file": "12-普通用户-运行中.png",
+      "page": "普通用户视角",
+      "scope": "完整手机",
+      "width": 360,
+      "height": 793,
+      "bytes": 209541,
+      "sha256": "6354cf832bb266eea0fd354144e94f3b9ffcfc354c81138e08ab839d6deb9cfa"
+    }
+  ]
+}
