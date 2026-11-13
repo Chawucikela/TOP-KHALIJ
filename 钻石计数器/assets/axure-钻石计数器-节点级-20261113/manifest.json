@@ -1,0 +1,180 @@
+{
+  "sourceRp": "/Users/gorkella/Files/Works/心音/TOP KHALIJ/Axure/礼物计数器.rp",
+  "documentId": "fa1d93c3-62c2-4510-a140-50b3883bcfd7",
+  "pageIds": {
+    "房主/管理员视角": "d0dec37a-50d7-4a53-bbf1-023cd94073bc",
+    "普通用户视角": "27836cba-e5bc-4b76-94b6-7dfb6886b74e"
+  },
+  "captureRule": "当前活源逐节点核验；变化节点本轮重导；未变化节点若本轮接口降采样则保留同一活源高分辨率版本；排除黄色旁注、Connector和状态标题；父组漏渲染时展开叶子；源画面缺陷忠实保留并在PRD标注。",
+  "assets": [
+    {
+      "file": "01-功能入口.png",
+      "page": "房主/管理员视角",
+      "scope": "完整手机；入口图标仍为占位",
+      "width": 360,
+      "height": 779,
+      "bytes": 257282,
+      "sha256": "f9e1d5c08b5c2839c11c9513258580f8242dc9be57d8cbb5c6c442fbc0278ddc",
+      "sourcePageId": "d0dec37a-50d7-4a53-bbf1-023cd94073bc",
+      "verifiedAgainst": "Axure current live source 2026-11-13",
+      "captureNote": "本轮按当前控件重导"
+    },
+    {
+      "file": "02-管理端-未开启.png",
+      "page": "房主/管理员视角",
+      "scope": "完整手机",
+      "width": 360,
+      "height": 793,
+      "bytes": 207262,
+      "sha256": "34a8cde6b8a3aea26a498e9dea58f1591cba851c06ea6621a25f7894aa3eaeaf",
+      "sourcePageId": "d0dec37a-50d7-4a53-bbf1-023cd94073bc",
+      "verifiedAgainst": "Axure current live source 2026-11-13",
+      "captureNote": "本轮按当前控件重导"
+    },
+    {
+      "file": "03-管理端-自定义时间选择器.png",
+      "page": "房主/管理员视角",
+      "scope": "完整手机+二级选择器",
+      "width": 360,
+      "height": 793,
+      "bytes": 153366,
+      "sha256": "f001fa12412389e05404b641a2d5bede5a54526ba8cec83a19ff52b7ab10528b",
+      "sourcePageId": "d0dec37a-50d7-4a53-bbf1-023cd94073bc",
+      "verifiedAgainst": "Axure current live source 2026-11-13",
+      "captureNote": "本轮按当前控件重导"
+    },
+    {
+      "file": "04-管理端-已设置自定义时间.png",
+      "page": "房主/管理员视角",
+      "scope": "完整手机；当前源画面右上奖杯入口未绘制；Rule三条完整可读",
+      "width": 360,
+      "height": 793,
+      "bytes": 205803,
+      "sha256": "29f7a3a95897ecebe9e2ec9a018c3218952bb302d460c0f50f849d186e19ae3a",
+      "sourcePageId": "d0dec37a-50d7-4a53-bbf1-023cd94073bc",
+      "verifiedAgainst": "Axure current live source 2026-11-13",
+      "captureNote": "本轮按当前控件重导"
+    },
+    {
+      "file": "05-管理端-运行中.png",
+      "page": "房主/管理员视角",
+      "scope": "完整手机",
+      "width": 360,
+      "height": 793,
+      "bytes": 213121,
+      "sha256": "d5b0f6ce283972885feba8040377d2ed8867602cb3f1832bc1da4cb48df6aa28",
+      "sourcePageId": "d0dec37a-50d7-4a53-bbf1-023cd94073bc",
+      "verifiedAgainst": "Axure current live source 2026-11-13",
+      "captureNote": "本轮按当前控件重导"
+    },
+    {
+      "file": "06-管理端-修改时长.png",
+      "page": "房主/管理员视角",
+      "scope": "完整手机+修改选择器",
+      "width": 360,
+      "height": 793,
+      "bytes": 155400,
+      "sha256": "5eb875d950b76e7bb521ec02a8024dff9125b9bef59807371d291b6345522ee4",
+      "sourcePageId": "d0dec37a-50d7-4a53-bbf1-023cd94073bc",
+      "verifiedAgainst": "Axure current live source 2026-11-13",
+      "captureNote": "本轮按当前控件重导"
+    },
+    {
+      "file": "07-麦位计数样式.png",
+      "page": "双视角共用",
+      "scope": "完整手机；两个在麦用户昵称下方包含钻石图标和钻石数额控件",
+      "width": 360,
+      "height": 793,
+      "bytes": 438773,
+      "sha256": "16711ad021448d82802fc1bec94c685e93e38c0b79ab004f415fadac5280e448",
+      "sourcePageId": "d0dec37a-50d7-4a53-bbf1-023cd94073bc",
+      "verifiedAgainst": "Axure current live source 2026-11-13",
+      "captureNote": "本轮复核通过；保留同一当前活源的较高分辨率节点图，避免Axure接口降采样"
+    },
+    {
+      "file": "08-Clear确认组件.png",
+      "page": "房主/管理员视角",
+      "scope": "组件级",
+      "width": 300,
+      "height": 144,
+      "bytes": 10980,
+      "sha256": "b7ee25c5835b0c7e1b50060f0fac2bd7753b90b46fd4819a751c0b2b74cf78e8",
+      "sourcePageId": "d0dec37a-50d7-4a53-bbf1-023cd94073bc",
+      "verifiedAgainst": "Axure current live source 2026-11-13",
+      "captureNote": "本轮复核通过；保留同一当前活源的较高分辨率节点图，避免Axure接口降采样"
+    },
+    {
+      "file": "09-End确认组件.png",
+      "page": "房主/管理员视角",
+      "scope": "组件级",
+      "width": 300,
+      "height": 144,
+      "bytes": 9280,
+      "sha256": "3ba79ab511ceb07e4934e65fbc6a36715a5177b9a64e93c2d03e70288f273489",
+      "sourcePageId": "d0dec37a-50d7-4a53-bbf1-023cd94073bc",
+      "verifiedAgainst": "Axure current live source 2026-11-13",
+      "captureNote": "本轮复核通过；保留同一当前活源的较高分辨率节点图，避免Axure接口降采样"
+    },
+    {
+      "file": "10-榜单有数据组件.png",
+      "page": "双视角共用",
+      "scope": "组件级；H5榜单示意",
+      "width": 300,
+      "height": 424,
+      "bytes": 40657,
+      "sha256": "446f1b5913a3e69cc4b034f3a2169aefa9cbf8f6d1235106e6e472d16876cfcd",
+      "sourcePageId": "d0dec37a-50d7-4a53-bbf1-023cd94073bc",
+      "verifiedAgainst": "Axure current live source 2026-11-13",
+      "captureNote": "本轮复核通过；保留同一当前活源的较高分辨率节点图，避免Axure接口降采样"
+    },
+    {
+      "file": "11-榜单空态组件.png",
+      "page": "双视角共用",
+      "scope": "当前完整榜单空态组件；含排行榜标题、Diamond Counter、房间ID、GMT+3时间范围、关闭按钮、空态区和“暂无数据”",
+      "width": 374,
+      "height": 514,
+      "bytes": 18896,
+      "sha256": "8cfbf8a26ff354b4719d7e6978902e0503307a76f5ec745b5f3cbddc91085a6d",
+      "sourcePageId": "d0dec37a-50d7-4a53-bbf1-023cd94073bc",
+      "verifiedAgainst": "Axure current live source 2026-11-13",
+      "captureNote": "当前活源直接组件渲染；仅增加白色安全留白并等比放大，未重绘或修改UI内容"
+    },
+    {
+      "file": "12-最终榜单导出长图.png",
+      "page": "双视角共用",
+      "scope": "H5导出长图示意；画布示意至12名，正式规则Top20",
+      "width": 272,
+      "height": 543,
+      "bytes": 55885,
+      "sha256": "ce2ed775bece993126172a3027495c2ec07c6dc29518258a7737d08b2207fbdb",
+      "sourcePageId": "d0dec37a-50d7-4a53-bbf1-023cd94073bc",
+      "verifiedAgainst": "Axure current live source 2026-11-13",
+      "captureNote": "本轮复核通过；保留同一当前活源的较高分辨率节点图，避免Axure接口降采样"
+    },
+    {
+      "file": "13-普通用户-未开启.png",
+      "page": "普通用户视角",
+      "scope": "完整手机",
+      "width": 360,
+      "height": 793,
+      "bytes": 206367,
+      "sha256": "250a5b3a36ddf8ab8047247f9e49c6a1af2e274a83ee8f45f62f4a487f38b55c",
+      "sourcePageId": "27836cba-e5bc-4b76-94b6-7dfb6886b74e",
+      "verifiedAgainst": "Axure current live source 2026-11-13",
+      "captureNote": "本轮按当前控件重导"
+    },
+    {
+      "file": "14-普通用户-运行中.png",
+      "page": "普通用户视角",
+      "scope": "完整手机",
+      "width": 360,
+      "height": 793,
+      "bytes": 209062,
+      "sha256": "c6a17b3daf9a92e84f6b57d802872c804012b1b1370486432c81498f350f6479",
+      "sourcePageId": "27836cba-e5bc-4b76-94b6-7dfb6886b74e",
+      "verifiedAgainst": "Axure current live source 2026-11-13",
+      "captureNote": "本轮按当前控件重导"
+    }
+  ],
+  "lastVerifiedAt": "2026-11-13"
+}
