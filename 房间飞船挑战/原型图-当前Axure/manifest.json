@@ -1,80 +1,95 @@
 {
-  "documentId": "08d607d0-26a6-4411-9310-711ae9ed43a2",
+  "generatedAt": "2026-11-16T12:35:36+08:00",
+  "documentId": "d54cc78d-c15e-4f13-be0b-1300c75e7551",
   "fileName": "房间飞船挑战",
-  "filePath": "/Users/gorkella/Documents/Axure/TOP KHALIJ/房间飞船挑战.rp",
-  "scopeFolder": "房间飞船挑战",
+  "filePath": "/Users/gorkella/Files/Works/心音/TOP KHALIJ/Axure/房间飞船挑战.rp",
+  "targetFolder": "房间飞船挑战",
+  "folderId": "8c28af7c-aeaa-46e3-bcbb-c0cd83377b80",
+  "pageCount": 8,
+  "captureMode": "whole canvas with annotations and connectors",
   "pages": [
     {
-      "pageId": "8903ea53-0bd9-449b-a6fe-eb94ceb62f48",
       "pageName": "入口",
+      "pageId": "8903ea53-0bd9-449b-a6fe-eb94ceb62f48",
       "file": "01-入口.png",
-      "captureScope": "wholeCanvasWithAnnotations"
+      "sha256": "cdb57205ee0234d4186d1db1827400d1ae87638fd5ed08d3e673e604b03b2ad2",
+      "states": []
     },
     {
-      "pageId": "340e93ed-6413-4428-836c-b256c08016ff",
       "pageName": "主界面",
+      "pageId": "340e93ed-6413-4428-836c-b256c08016ff",
       "file": "02-主弹窗.png",
+      "sha256": "d26d2ba3a0f508eb4467c7c0af8270ea7be433cdb3fdf3dde7752126233e30a6",
       "states": [
         {
           "stateName": "充能中",
-          "diagramId": "44977379-b5f0-4c52-91d9-6532416d31e1",
-          "file": "02-1-主弹窗-充能中.png"
+          "source": "page visible state",
+          "file": "02-1-主弹窗-充能中.png",
+          "sha256": "9d02082ac4c6aac040355a7af34fc4eed8fb4fcf1893f98e939de17d70d4b2a0"
         },
         {
           "stateName": "待启动",
           "diagramId": "4b18d8d8-afb0-4cea-beef-751ad94d494f",
-          "file": "02-2-主弹窗-待启动.png"
+          "file": "02-2-主弹窗-待启动.png",
+          "sha256": "0aa20159309325edfce5a28cbd0e7c9719f5a50a8d50313f6db372253a354262"
         },
         {
           "stateName": "已充满",
           "diagramId": "b1737219-21c3-4c83-b36d-87233540cd03",
-          "file": "02-3-主弹窗-已充满.png"
-        }
-      ],
-      "captureScope": "wholeCanvasWithAnnotations"
-    },
-    {
-      "pageId": "a8cca0ca-4a20-453f-857d-2bf71219bbdb",
-      "pageName": "规则弹窗",
-      "file": "03-规则弹窗.png",
-      "captureScope": "wholeCanvasWithAnnotations"
-    },
-    {
-      "pageId": "5d5a1fe0-4fe4-449e-896e-d9b57cf77d5c",
-      "pageName": "奖励配置",
-      "file": "07-奖励配置.png",
-      "captureScope": "wholeCanvasWithAnnotations"
-    },
-    {
-      "pageId": "d4ecca39-9b2e-4bb8-9a46-89401f93b4d6",
-      "pageName": "发射与能量仓掉落效果",
-      "file": "04-发射与能量仓掉落效果.png",
-      "captureScope": "wholeCanvasWithAnnotations"
-    },
-    {
-      "pageId": "34410154-49a2-4b11-bf8e-bdd35d04c0e0",
-      "pageName": "开奖弹窗",
-      "file": "05-开奖弹窗.png",
-      "captureScope": "wholeCanvasWithAnnotations",
-      "states": [
-        {
-          "stateName": "非MVP",
-          "diagramId": "cf9d129f-7503-41e8-933c-1e6cdd0af1fa",
-          "file": "05-1-开奖弹窗-非MVP.png"
+          "file": "02-3-主弹窗-已充满.png",
+          "sha256": "9184bc19f6d77e1bdc58cd5fcbda053f1be6a0a16cb15eaabed78f273336b4d0"
         }
       ]
     },
     {
-      "pageId": "0bbf72c9-6b4a-4a52-9c3b-e60ba5f486de",
-      "pageName": "获奖记录弹窗",
-      "file": "06-获奖记录弹窗.png",
-      "captureScope": "wholeCanvasWithAnnotations"
+      "pageName": "规则",
+      "pageId": "a8cca0ca-4a20-453f-857d-2bf71219bbdb",
+      "file": "03-规则H5页.png",
+      "sha256": "7bd5a29e573fda3e1dbf5f3dd895e50c729ff4928e71ae9de1a2c029c13c5b2f",
+      "states": [],
+      "businessName": "规则H5页"
     },
     {
-      "pageId": "8c4e2e86-93b5-4e6f-9ea0-62eb487f7afb",
+      "pageName": "奖励配置",
+      "pageId": "5d5a1fe0-4fe4-449e-896e-d9b57cf77d5c",
+      "file": "07-奖励配置.png",
+      "sha256": "2d0c440319ec53ea6f34a154f62970e96ae1eb27138124065691211ebceead48",
+      "states": []
+    },
+    {
+      "pageName": "发射与能量仓掉落效果",
+      "pageId": "d4ecca39-9b2e-4bb8-9a46-89401f93b4d6",
+      "file": "04-发射与能量仓掉落效果.png",
+      "sha256": "c8f27f71b780e5a9b1da4d6fd2a4b8abe393d4f0fd43d6b865dc7cffa2668bb2",
+      "states": []
+    },
+    {
       "pageName": "飘屏",
+      "pageId": "8c4e2e86-93b5-4e6f-9ea0-62eb487f7afb",
       "file": "08-飘屏.png",
-      "captureScope": "wholeCanvasWithAnnotations"
+      "sha256": "a3bfdfd82dd48d8bd0acd101eed693d34aa8be04f1818a5410636032eba890da",
+      "states": []
+    },
+    {
+      "pageName": "开奖弹窗",
+      "pageId": "34410154-49a2-4b11-bf8e-bdd35d04c0e0",
+      "file": "05-开奖弹窗.png",
+      "sha256": "6a4dfffeb63cc9d84bd21d42d290c23133f86cbb3abd26d6b8d0d862ef04e092",
+      "states": [
+        {
+          "stateName": "非MVP",
+          "diagramId": "388b8fe8-9c7c-438c-ac7c-c0a13f14ed10",
+          "file": "05-1-开奖弹窗-非MVP.png",
+          "sha256": "5a003b4b6b87714234c80ae62b2a343de552e09c7ddc06646a5edd242251ba83"
+        }
+      ]
+    },
+    {
+      "pageName": "获奖记录弹窗",
+      "pageId": "0bbf72c9-6b4a-4a52-9c3b-e60ba5f486de",
+      "file": "06-获奖记录弹窗.png",
+      "sha256": "7a665a86b80758d4e208f850e5487199c18bab35f8d1f6f4bd5f9acd2ee4dc60",
+      "states": []
     }
   ]
 }

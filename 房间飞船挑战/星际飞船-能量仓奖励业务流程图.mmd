@@ -9,7 +9,7 @@ flowchart LR
     A([阶段达标并锁定]) --> B[统计用户阶段贡献]
     B --> C{达到44,444金币?}
     C -- 否 --> D([无奖励·不参与MVP])
-    C -- 是 --> E[确定3个不重复<br/>普通能量仓奖励]
+    C -- 是 --> E[确定3个不同候选配置项<br/>具体道具允许相同]
     C -- 是 --> F[确定MVP Top1—Top3]
     E --> G[汇总用户应得奖励]
     F --> G
@@ -47,7 +47,7 @@ flowchart TD
     J --> K[取Top1—Top3<br/>不足3人按实际人数]
 
     F --> L[普通奖励与MVP奖励独立]
-    K --> M[Top1—Top3追加同等级共用配置的MVP奖励]
+    K --> M[Top1—Top3每人追加同等级共用的<br/>MVP固定7项个人奖励]
     L --> N([资格判定完成])
     M --> N
 
@@ -64,15 +64,13 @@ flowchart TD
 ```mermaid
 flowchart TD
     A([用户获得普通能量仓资格]) --> B[读取该等级当日奖池快照]
-    B --> C[初始化本轮结果<br/>已选奖励项为空]
+    B --> C[校验8个候选配置项：配置项ID唯一<br/>概率和=1·数量合法·有效期≤3天]
     C --> D{结果是否已有3项?}
-    D -- 是 --> E[固化3个不重复奖励项]
-    D -- 否 --> F[按剩余候选奖励项概率抽取]
-    F --> G{是否命中奖励项?}
-    G -- 是 --> H[加入结果并从本轮候选中移除]
-    G -- 否 --> I[从尚未选中的兜底候选中补1项]
+    D -- 是 --> E[固化3个不同候选配置项<br/>保留道具ID·数量·有效期]
+    D -- 否 --> F[移除已抽中候选配置项<br/>剩余候选权重重新归一后抽取]
+    F --> H[加入结果并仅移除该候选配置项<br/>同道具其他候选仍可抽中]
     H --> D
-    I --> D
+    F -. 效果等同再次命中已抽中配置项时持续重抽 .-> F
     E --> J[保存首次定奖结果<br/>重试与补发不得重新随机]
     J --> K([普通能量仓定奖完成])
 
@@ -80,8 +78,8 @@ flowchart TD
     classDef decision fill:#FFF8E1,stroke:#F9A825,color:#5D4037;
     classDef process fill:#E3F2FD,stroke:#1976D2,color:#0D47A1;
     class A,K startEnd;
-    class D,G decision;
-    class B,C,E,F,H,I,J process;
+    class D decision;
+    class B,C,E,F,H,J process;
 ```
 
 ## 4. 发奖、防重、记录与通知
@@ -102,28 +100,29 @@ flowchart TD
     J -- 否 --> H
     J -- 是 --> K[完成用户阶段结算]
 
-    K --> L{奖励来源}
-    L -- 普通能量仓 --> M[生成或更新本人能量仓记录]
-    L -- 含MVP奖励 --> N[另生成或更新MVP公开记录]
-    K --> O[发送该用户到账通知]
-    O --> P{通知成功?}
-    P -- 是 --> Q[标记通知完成]
-    P -- 否 --> R[记录通知异常<br/>不回滚奖励]
+    K --> L[生成或更新本人普通能量仓记录]
+    L --> M{是否含MVP固定7项奖励?}
+    M -- 是 --> N[另生成或更新MVP公开记录]
+    M -- 否 --> O[无需MVP公开记录]
+    K --> P[发送该用户到账通知]
+    P --> Q{通知成功?}
+    Q -- 是 --> R[标记通知完成]
+    Q -- 否 --> S[记录通知异常<br/>不回滚奖励]
 
-    M --> S([处理结束])
-    N --> S
-    Q --> S
-    R --> S
-    H --> T([等待重试或人工补发])
+    N --> T([处理结束])
+    O --> T
+    R --> T
+    S --> T
+    H --> U([等待重试或人工补发])
 
     classDef startEnd fill:#E8F5E9,stroke:#2E7D32,color:#1B5E20;
     classDef decision fill:#FFF8E1,stroke:#F9A825,color:#5D4037;
     classDef process fill:#E3F2FD,stroke:#1976D2,color:#0D47A1;
     classDef exception fill:#FFEBEE,stroke:#C62828,color:#B71C1C;
-    class A,S,T startEnd;
-    class D,G,J,L,P decision;
-    class B,C,E,F,I,K,M,N,O,Q process;
-    class H,R exception;
+    class A,T,U startEnd;
+    class D,G,J,M,Q decision;
+    class B,C,E,F,I,K,L,N,O,P,R process;
+    class H,S exception;
 ```
 
 ## 5. 奖励结果展示边界

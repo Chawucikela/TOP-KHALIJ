@@ -14,7 +14,7 @@ flowchart LR
 
     E --> F[奖励结算<br/>资格·普通奖励·MVP]
     E --> G[等级推进<br/>处理溢出能量]
-    E --> H[表现与通知<br/>飘屏·发射·掉落·开奖]
+    E --> H[房间推送与动效<br/>全服飘屏·发射·掉落·开奖]
 
     F --> I{全部应得奖励<br/>成功入账?}
     I -- 否 --> J[失败奖励项<br/>进入异常待处理]
@@ -85,13 +85,13 @@ flowchart TD
     C -- 否 --> D[无普通奖励<br/>不参与MVP排名]
     C -- 是 --> E[进入达标用户集合]
 
-    E --> F[普通能量仓：按奖励项概率抽取<br/>3个不重复奖励，未命中由兜底补齐]
+    E --> F[普通能量仓：读取本档8个生效候选<br/>按候选配置项无放回抽3项]
     E --> G[按贡献降序→最终贡献完成时间升序<br/>→用户ID数值升序确定Top1—Top3]
 
     F --> H[汇总普通能量仓奖励]
     G --> I{是否为MVP Top1—Top3?}
-    I -- 否 --> J[无MVP额外奖励]
-    I -- 是 --> K[追加同等级共用配置的<br/>MVP额外能量仓]
+    I -- 否 --> J[无MVP个人奖励]
+    I -- 是 --> K[追加同等级共用配置的<br/>MVP固定7项个人奖励]
 
     H --> L[形成用户本阶段应得奖励清单]
     J --> L
@@ -173,11 +173,11 @@ flowchart TD
     class O,P feedback;
 ```
 
-## 5. 阶段解锁全局飘屏
+## 5. 房间阶段解锁全服飘屏
 
 ```mermaid
 flowchart TD
-    A([阶段首次完成锁定]) --> B[发送全局飘屏<br/>头像·房间名称及ID·解锁文案<br/>带等级标识的飞船缩略图]
+    A([阶段首次完成锁定]) --> B[系统为达标房间发送全服飘屏<br/>不计入个人MVP奖励<br/>头像·房间名称及ID·解锁文案]
     B --> C{用户是否点击飘屏?}
     C -- 否 --> D([飘屏展示结束])
     C -- 是 --> E{点击时所在状态}
@@ -262,4 +262,29 @@ flowchart TD
     class F decision;
     class B,C,D,E,G process;
     class H,I,J exception;
+```
+
+
+## 8. 飞船主界面与规则H5
+
+```mermaid
+flowchart LR
+    A([点击房间飞船入口]) --> B[打开飞船主界面]
+    B --> C{用户操作}
+    C -- 切换Lv.1—Lv.5 --> D[刷新所选档位飞船、进度、状态与奖励]
+    C -- 点击获奖记录 --> E[打开奖励记录弹窗]
+    C -- 点击规则 --> F[打开规则H5页]
+    F --> G{H5加载结果}
+    G -- 成功 --> H[展示规则正文、五级能量<br/>及各档4列奖励容器]
+    G -- 失败 --> I[展示H5加载失败状态]
+    H --> J[点击左上角关闭]
+    I --> J
+    J --> B
+
+    classDef startEnd fill:#E8F5E9,stroke:#2E7D32,color:#1B5E20;
+    classDef decision fill:#FFF8E1,stroke:#F9A825,color:#5D4037;
+    classDef process fill:#E3F2FD,stroke:#1976D2,color:#0D47A1;
+    class A startEnd;
+    class C,G decision;
+    class B,D,E,F,H,I,J process;
 ```
