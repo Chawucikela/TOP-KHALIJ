@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-11-16T12:35:36+08:00",
-  "documentId": "d54cc78d-c15e-4f13-be0b-1300c75e7551",
+  "generatedAt": "2026-11-18T16:35:25+08:00",
+  "documentId": "559a7ed0-cc4f-4ca5-b5be-d466f6e9c1cc",
   "fileName": "房间飞船挑战",
   "filePath": "/Users/gorkella/Files/Works/心音/TOP KHALIJ/Axure/房间飞船挑战.rp",
   "targetFolder": "房间飞船挑战",
@@ -60,8 +60,14 @@
       "pageName": "发射与能量仓掉落效果",
       "pageId": "d4ecca39-9b2e-4bb8-9a46-89401f93b4d6",
       "file": "04-发射与能量仓掉落效果.png",
-      "sha256": "c8f27f71b780e5a9b1da4d6fd2a4b8abe393d4f0fd43d6b865dc7cffa2668bb2",
-      "states": []
+      "sha256": "7c6e60f76c5d1cd7aae3e9802684b574edc8f8d03fce3c00c94c55760a505f0f",
+      "states": [],
+      "captureScope": "whole canvas",
+      "imageSize": [
+        531,
+        1075
+      ],
+      "latestEvidence": "飞船发射前倒计时3秒；发射阶段总时长≤4秒；结束后播放3.5秒能量仓掉落"
     },
     {
       "pageName": "飘屏",
