@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-11-18T16:35:25+08:00",
-  "documentId": "559a7ed0-cc4f-4ca5-b5be-d466f6e9c1cc",
+  "generatedAt": "2026-11-19T19:33:27+08:00",
+  "documentId": "8502d394-9820-415a-ade1-e12216ebcd41",
   "fileName": "房间飞船挑战",
   "filePath": "/Users/gorkella/Files/Works/心音/TOP KHALIJ/Axure/房间飞船挑战.rp",
   "targetFolder": "房间飞船挑战",
@@ -60,14 +60,14 @@
       "pageName": "发射与能量仓掉落效果",
       "pageId": "d4ecca39-9b2e-4bb8-9a46-89401f93b4d6",
       "file": "04-发射与能量仓掉落效果.png",
-      "sha256": "7c6e60f76c5d1cd7aae3e9802684b574edc8f8d03fce3c00c94c55760a505f0f",
+      "sha256": "dabdc99a6363c81cfef335ea17e5497b4d1ce5205b4a123b2cc41296389a9113",
       "states": [],
-      "captureScope": "whole canvas",
+      "captureScope": "whole canvas with annotations and connectors",
       "imageSize": [
-        531,
-        1075
+        872,
+        1764
       ],
-      "latestEvidence": "飞船发射前倒计时3秒；发射阶段总时长≤4秒；结束后播放3.5秒能量仓掉落"
+      "latestEvidence": "倒计时3秒后发射；发射阶段≤4秒；3.5秒能量仓掉落；档位解锁时打断当前礼物/座驾动效并插队播放，完成后继续原待播队列"
     },
     {
       "pageName": "飘屏",
